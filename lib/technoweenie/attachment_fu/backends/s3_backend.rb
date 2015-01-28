@@ -177,7 +177,7 @@ module Technoweenie # :nodoc:
           begin
             require 'aws-sdk-v1'
           rescue LoadError
-            raise RequiredLibraryNotFoundError.new('AWS::S3 could not be loaded')
+            raise RequiredLibraryNotFoundError.new('aws-sdk-v1 could not be loaded. Make sure the gem is installed.')
           end
 
           begin

@@ -17,6 +17,8 @@ Gem::Specification.new do |s|
   s.rubyforge_project = "nowarning"
   s.rubygems_version  = %q{1.8.29}
 
+  s.add_runtime_dependency 'aws-sdk-v1', '~> 1.61.0'
+
   if s.respond_to? :specification_version then
     s.specification_version = 2
   end
