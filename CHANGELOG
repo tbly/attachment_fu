@@ -1,3 +1,6 @@
+* Apr 11, 2016 *
+* Pull in changes from brauliobo to fix RMagick deprication warning *
+	
 * Jul 15, 2015 *
 * Pull in changes from brauliobo to fix protected_attributes for Rails 4.2 *
 * Acknowlegement also to malmckay who provided another elegant fix to the protected_attributes problem and I want to thank him for it, but I had to pick 1 *
