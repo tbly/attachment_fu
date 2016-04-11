@@ -1,4 +1,5 @@
-require 'RMagick'
+require 'rmagick'
+
 module Technoweenie # :nodoc:
   module AttachmentFu # :nodoc:
     module Processors
