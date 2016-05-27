@@ -477,7 +477,11 @@ module Technoweenie # :nodoc:
         def find_or_initialize_thumbnail(file_name_suffix)
           attrs = {thumbnail: file_name_suffix.to_s}
           attrs[:parent_id] = id if respond_to? :parent_id
-          thumb = thumbnail_class.where(attrs).first
+          thumb = if thumbnail_class.respond_to?(:where)
+                    thumbnail_class.where(attrs).first
+                  else
+                    thumbnail_class.find(:first, :conditions => attrs)
+                  end
           unless thumb
             thumb = thumbnail_class.new
             attrs.each{ |a, v| thumb[a] = v }
