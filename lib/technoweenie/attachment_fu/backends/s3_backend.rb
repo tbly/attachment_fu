@@ -7,8 +7,7 @@ module Technoweenie # :nodoc:
       #
       # == Requirements
       #
-      # Requires the {AWS::S3 Library}[http://amazon.rubyforge.org] for S3 by Marcel Molina Jr. installed either
-      # as a gem or a as a Rails plugin.
+      # Requires the aws-sdk-v1 gem.
       #
       # == Configuration
       #
@@ -173,13 +172,12 @@ module Technoweenie # :nodoc:
         class ConfigFileNotFoundError < StandardError; end
 
         def self.included(base) #:nodoc:
-          mattr_reader :bucket_name, :s3_config
+          mattr_reader :bucket_name, :s3_config, :s3_conn, :bucket
 
           begin
-            require 'aws/s3'
-            include AWS::S3
+            require 'aws-sdk-v1'
           rescue LoadError
-            raise RequiredLibraryNotFoundError.new('AWS::S3 could not be loaded')
+            raise RequiredLibraryNotFoundError.new('aws-sdk-v1 could not be loaded. Make sure the gem is installed.')
           end
 
           begin
@@ -198,9 +196,10 @@ module Technoweenie # :nodoc:
           end
           base.class_eval(eval_string, __FILE__, __LINE__)
 
-          Base.establish_connection!(s3_config.slice(:access_key_id, :secret_access_key, :server, :port, :use_ssl, :persistent, :proxy))
+          @@s3_conn = AWS::S3.new(s3_config.slice(:access_key_id, :secret_access_key))
+          @@bucket = s3_conn.buckets[s3_config[:bucket_name]]
 
-          # Bucket.create(@@bucket_name)
+          #Base.establish_connection!(s3_config.slice(:access_key_id, :secret_access_key, :server, :port, :use_ssl, :persistent, :proxy))
 
           base.before_update :rename_file
         end
@@ -210,7 +209,7 @@ module Technoweenie # :nodoc:
         end
 
         def self.hostname
-          @hostname ||= s3_config[:server] || AWS::S3::DEFAULT_HOST
+          @hostname ||= s3_config[:server] || 's3.amazonaws.com'
         end
 
         def self.port_string
@@ -324,9 +323,12 @@ module Technoweenie # :nodoc:
         #   @photo.authenticated_s3_url('thumbnail', :expires_in => 5.hours, :use_ssl => true)
         def authenticated_s3_url(*args)
           options   = args.extract_options!
-          options[:expires_in] = options[:expires_in].to_i if options[:expires_in]
+          options[:expires] = options[:expires_in].to_i if options[:expires_in]
+          options[:secure] = options[:use_ssl] if options[:use_ssl]
+          options.delete(:expires_in) if options[:expires_in]
+          options.delete(:use_ssl) if options[:use_ssl]
           thumbnail = args.shift
-          S3Object.url_for(full_filename(thumbnail), bucket_name, options)
+          bucket.objects[full_filename(thumbnail)].url_for(:read, options).to_s
         end
 
         def create_temp_file
@@ -335,9 +337,9 @@ module Technoweenie # :nodoc:
 
         def current_data
           if attachment_options[:encrypted_storage] && self.respond_to?(:encryption_key) && self.encryption_key != nil
-            EncryptedData.decrypt_data(S3Object.value(full_filename, bucket_name), self.encryption_key)
+            EncryptedData.decrypt_data(bucket.objects[full_filename].read, self.encryption_key)
           else
-            S3Object.value full_filename, bucket_name
+            bucket.objects[full_filename].read
           end
         end
 
@@ -360,21 +362,28 @@ module Technoweenie # :nodoc:
         protected
           # Called in the after_destroy callback
           def destroy_file
-            S3Object.delete full_filename, bucket_name
+            obj = bucket.objects[full_filename]
+            obj.delete
           end
 
           def rename_file
             return unless @old_filename && @old_filename != filename
 
             old_full_filename = File.join(base_path, @old_filename)
+            old_obj = bucket.objects[old_full_filename]
+            obj = bucket.objects[full_filename]
 
-            S3Object.rename(
-              old_full_filename,
-              full_filename,
-              bucket_name,
-              :access => attachment_options[:s3_access]
-            )
+            if attachment_options[:encrypted_storage]
+              obj.copy_from(old_obj, {:cache_control => attachment_options[:cache_control],
+                                      :acl => attachment_options[:s3_access],
+                                      :server_side_encryption => :aes256,
+                                      :content_disposition => "attachment; filename=\"#{filename}\""})
+            else
+              obj.copy_from(old_obj, {:cache_control => attachment_options[:cache_control],
+                                      :acl => attachment_options[:s3_access]})
+            end
 
+            old_obj.delete
             @old_filename = nil
             true
           end
@@ -382,25 +391,19 @@ module Technoweenie # :nodoc:
           def save_to_storage
             if save_attachment?
               if attachment_options[:encrypted_storage]
-                S3Object.store(
-                               full_filename,
-                               (temp_path ? File.open(temp_path) : temp_data),
-                               bucket_name,
-                               :content_type => content_type,
-                               :cache_control => attachment_options[:cache_control],
-                               :access => attachment_options[:s3_access],
-                               'x-amz-server-side-encryption' => 'AES256',
-                               'Content-Disposition' => "attachment; filename=\"#{filename}\""
-                               )
+                obj = bucket.objects[full_filename]
+                obj.write(:file => (temp_path ? File.open(temp_path) : temp_data),
+                          :cache_control => attachment_options[:cache_control],
+                          :acl => attachment_options[:s3_access],
+                          :server_side_encryption => :aes256,
+                          :content_disposition => "attachment; filename=\"#{filename}\""
+                )
               else
-                S3Object.store(
-                               full_filename,
-                               (temp_path ? File.open(temp_path) : temp_data),
-                               bucket_name,
-                               :content_type => content_type,
-                               :cache_control => attachment_options[:cache_control],
-                               :access => attachment_options[:s3_access]
-                               )
+                obj = bucket.objects[full_filename]
+                obj.write(:file => (temp_path ? File.open(temp_path) : temp_data),
+                          :cache_control => attachment_options[:cache_control],
+                          :acl => attachment_options[:s3_access]
+                )
               end
             end
 
