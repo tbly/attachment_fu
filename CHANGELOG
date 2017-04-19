@@ -1,3 +1,7 @@
+* Apr 19, 2017 *
+* Pull in changes from bacrossland to upgrade from aws-s3 gem to aws-sdk gem *
+* Bump version to 3.3.0 to try to protect auto builds using s3 gem from breaking *
+
 * May 27, 2016 *
 * Pull in changes from gaugausi to fix for non-existent #where interface in Rails 2.3 *
 
