@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require 'mini_magick'
 module Technoweenie # :nodoc:
   module AttachmentFu # :nodoc:
@@ -5,8 +6,8 @@ module Technoweenie # :nodoc:
       module MiniMagickProcessor
         def self.included(base)
           base.send :extend, ClassMethods
-          base.alias_method :process_attachment_without_processing, :process_attachment
-          base.alias_method :process_attachment, :process_attachment_with_processing
+          base.send :alias_method, :process_attachment_without_processing, :process_attachment
+          base.send :alias_method, :process_attachment, :process_attachment_with_processing
         end
  
         module ClassMethods

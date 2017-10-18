@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require 'red_artisan/core_image/processor'
 
 module Technoweenie # :nodoc:
@@ -6,8 +7,8 @@ module Technoweenie # :nodoc:
       module CoreImageProcessor
         def self.included(base)
           base.send :extend, ClassMethods
-          base.alias_method :process_attachment_without_processing, :process_attachment
-          base.alias_method :process_attachment, :process_attachment_with_processing
+          base.send :alias_method, :process_attachment_without_processing, :process_attachment
+          base.send :alias_method, :process_attachment, :process_attachment_with_processing
         end
         
         module ClassMethods

@@ -8,3 +8,4 @@ tmp/restart.txt
 #config
 log
 tmp
+test/amazon_s3.yml
