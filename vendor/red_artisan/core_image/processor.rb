@@ -105,9 +105,10 @@ module OSX
     
       block.call f.valueForKey('outputImage')
     end
-  
-    alias_method_chain :method_missing, :filter_processing
-      
+
+    alias_method :method_missing_without_filter_processing, :method_missing
+    alias_method :method_missing, :method_missing_with_filter_processing
+
     def save(target, format = OSX::NSJPEGFileType, properties = nil)
       bitmapRep = OSX::NSBitmapImageRep.alloc.initWithCIImage(self)
       blob = bitmapRep.representationUsingType_properties(format, properties)
