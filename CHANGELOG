@@ -1,3 +1,7 @@
+* Oct 19, 2017 *
+* Pull in changes from michaelsauter to replace Fixnum with Integer as Fixnum was depricated in Ruby 2.4
+* Bump version to 3.3.2 *
+
 * Oct 18, 2017 *
 * Pull in changes from michaelsauter to replace alias_method_chain with alias_method for Rails 5 support *
 * Update michaelsauter's alias_method changes to work in older Rails *

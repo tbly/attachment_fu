@@ -1,6 +1,7 @@
 PATH
   remote: .
   specs:
+    pothoven-attachment_fu (3.3.2)
 
 GEM
   remote: https://rubygems.org/
