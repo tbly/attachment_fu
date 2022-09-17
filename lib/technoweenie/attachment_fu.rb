@@ -1,3 +1,14 @@
+require_relative "./backends/cloud_file_backend.rb"
+require_relative "./backends/db_file_backend.rb"
+require_relative "./backends/file_system_backend.rb"
+require_relative "./backends/s3_backend.rb"
+
+require_relative "./processors/core_image_processor.rb"
+require_relative "./processors/gd2_processor.rb"
+require_relative "./processors/image_science_processor.rb"
+require_relative "./processors/mini_magick_processor.rb"
+require_relative "./processors/rmagick_processor.rb"
+
 module Technoweenie # :nodoc:
   module AttachmentFu # :nodoc:
     @@default_processors = %w(ImageScience Rmagick MiniMagick Gd2 CoreImage)

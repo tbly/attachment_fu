@@ -1,3 +1,4 @@
+require_relative "./technoweenie/attachment_fu.rb"
 
 if defined?(Rails::Engine)
   # Rails >= 3
