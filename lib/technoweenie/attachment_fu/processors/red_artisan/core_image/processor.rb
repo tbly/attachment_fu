@@ -1,5 +1,5 @@
 require 'rubygems'
-require 'osx/cocoa'
+# require 'osx/cocoa'
 require 'active_support'
 
 require 'red_artisan/core_image/filters/scale'
