@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-require './red_artisan/core_image/processor'
+require_relative './red_artisan/core_image/processor'
 
 module Technoweenie # :nodoc:
   module AttachmentFu # :nodoc:
