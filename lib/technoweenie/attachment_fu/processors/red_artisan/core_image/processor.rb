@@ -2,12 +2,12 @@ require 'rubygems'
 # require 'osx/cocoa'
 require 'active_support'
 
-require 'filters/scale'
-require 'filters/color'
-require 'filters/watermark'
-require 'filters/quality'
-require 'filters/perspective'
-require 'filters/effects'
+require_relative './filters/scale.rb'
+require_relative './filters/color.rb'
+require_relative './filters/watermark.rb'
+require_relative './filters/quality.rb'
+require_relative './filters/perspective.rb'
+require_relative './filters/effects.rb'
 
 # Generic image processor for scaling images based on CoreImage via RubyCocoa.
 #
