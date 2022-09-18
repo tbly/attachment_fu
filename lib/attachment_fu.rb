@@ -7,6 +7,7 @@ if defined?(Rails::Engine)
     config.autoload_paths << File.expand_path("..", __FILE__)
 
     initializer "attachment_fu" do
+      puts "TEST INIT GEM HERE"
       require 'geometry'
 
       ActiveRecord::Base.send(:extend, Technoweenie::AttachmentFu::ActMethods)
