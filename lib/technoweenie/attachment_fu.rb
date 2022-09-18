@@ -7,7 +7,7 @@ require_relative "./attachment_fu/processors/rmagick_processor.rb"
 
 module Technoweenie # :nodoc:
   module AttachmentFu # :nodoc:
-    @@default_processors = %w(ImageScience Rmagick MiniMagick Gd2 CoreImage)
+    @@default_processors = %w(Rmagick ImageScience MiniMagick Gd2 CoreImage)
     @@tempfile_path      = File.join(Rails.root.to_s, 'tmp', 'attachment_fu')
     @@content_types      = [
       'image/jpeg',
