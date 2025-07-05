@@ -138,7 +138,7 @@ module Technoweenie # :nodoc:
         end
         with_options(association_options) do |m|
           m.has_many   :thumbnails, :class_name => "::#{attachment_options[:thumbnail_class]}"
-          m.belongs_to :parent, :class_name => "::#{base_class}" unless options[:thumbnails].empty?
+          m.belongs_to :parent, :class_name => "::#{base_class}", :optional => true unless options[:thumbnails].empty?
         end
 
         storage_mod = ::Technoweenie::AttachmentFu::Backends.const_get("#{options[:storage].to_s.classify}Backend")
